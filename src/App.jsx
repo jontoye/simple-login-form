@@ -31,6 +31,8 @@ export default function App() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
 
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);
@@ -45,8 +47,11 @@ export default function App() {
 
     try {
       await login(username, password);
+      setLoggedIn(true);
+      setNotification("Successfully logged in.");
+      setTimeout(() => setNotification(""), 2000);
     } catch (error) {
-      console.error(error);
+      setNotification("Wrong username or password. Try again");
     }
 
     setLoading(false);
@@ -67,6 +72,9 @@ export default function App() {
               </Typography>
             }
           />
+          <Typography color={loggedIn ? "success.main" : "error.main"}>
+            {notification}
+          </Typography>
           <LoginCardContent>
             <TextField
               label="username"
