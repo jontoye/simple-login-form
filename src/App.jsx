@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { login } from "./utils/login";
-import { useState } from "react";
+import { useReducer } from "react";
 
 const LoginCard = styled(Card)({
   padding: "20px 50px"
@@ -28,40 +28,92 @@ const LoginCardActions = styled(CardActions)({
   justifyContent: "center"
 });
 
+const loginReducer = (state, action) => {
+  switch (action.type) {
+    case "login": {
+      return {
+        ...state,
+        loading: true
+      };
+    }
+    case "success": {
+      return {
+        ...state,
+        loading: false,
+        loggedIn: true,
+        notification: ""
+      };
+    }
+    case "failure": {
+      return {
+        ...state,
+        loading: false,
+        username: "",
+        password: "",
+        notification: "Wrong username or password. Try again"
+      };
+    }
+    case "logout": {
+      return {
+        ...state,
+        username: "",
+        password: "",
+        loggedIn: false
+      };
+    }
+    case "field": {
+      return {
+        ...state,
+        [action.field]: action.value
+      };
+    }
+    default:
+      break;
+  }
+  return state;
+};
+
+const initialState = {
+  username: "",
+  password: "",
+  loading: false,
+  notification: "",
+  loggedIn: false
+};
+
 export default function App() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [notification, setNotification] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false);
+  const [state, dispatch] = useReducer(loginReducer, initialState);
+  const { username, password, loading, notification, loggedIn } = state;
 
   const handleUsernameChange = (e) => {
-    setUsername(e.target.value);
+    dispatch({
+      type: "field",
+      field: "username",
+      value: e.currentTarget.value
+    });
   };
 
   const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
+    dispatch({
+      type: "field",
+      field: "password",
+      value: e.currentTarget.value
+    });
   };
 
   const handleLogin = async () => {
-    setLoading(true);
+    dispatch({ type: "login" });
 
     try {
       await login(username, password);
-      setLoggedIn(true);
-      setTimeout(() => setNotification(""), 2000);
+      dispatch({ type: "success" });
     } catch (error) {
-      setNotification("Wrong username or password. Try again");
+      dispatch({ type: "failure" });
     }
-
-    setLoading(false);
   };
 
   const handleLogout = () => {
-    setLoggedIn(false);
-    setUsername("");
-    setPassword("");
-    setNotification("");
+    dispatch({ type: "logout" });
   };
 
   return (
@@ -94,6 +146,7 @@ export default function App() {
             </Typography>
             <LoginCardContent>
               <TextField
+                autoFocus
                 label="username"
                 value={username}
                 onChange={handleUsernameChange}
