@@ -1,5 +1,6 @@
 import { styled } from "@mui/system";
 import {
+  Button,
   Grid,
   Card,
   CardActions,
@@ -48,13 +49,19 @@ export default function App() {
     try {
       await login(username, password);
       setLoggedIn(true);
-      setNotification("Successfully logged in.");
       setTimeout(() => setNotification(""), 2000);
     } catch (error) {
       setNotification("Wrong username or password. Try again");
     }
 
     setLoading(false);
+  };
+
+  const handleLogout = () => {
+    setLoggedIn(false);
+    setUsername("");
+    setPassword("");
+    setNotification("");
   };
 
   return (
@@ -64,46 +71,57 @@ export default function App() {
       </Grid>
 
       <Grid item>
-        <LoginCard raised>
-          <CardHeader
-            title={
-              <Typography variant="h5" align="center">
-                Please Login
-              </Typography>
-            }
-          />
-          <Typography color={loggedIn ? "success.main" : "error.main"}>
-            {notification}
-          </Typography>
-          <LoginCardContent>
-            <TextField
-              label="username"
-              value={username}
-              onChange={handleUsernameChange}
-              disabled={loggedIn}
+        {loggedIn ? (
+          <>
+            <Typography align="center" variant="h4">
+              Hello {username}!
+            </Typography>
+            <Button variant="contained" onClick={handleLogout}>
+              Logout
+            </Button>
+          </>
+        ) : (
+          <LoginCard raised>
+            <CardHeader
+              title={
+                <Typography variant="h5" align="center">
+                  Please Login
+                </Typography>
+              }
             />
-            <TextField
-              helperText="Do not share your password with anyone"
-              type="password"
-              label="password"
-              value={password}
-              onChange={handlePasswordChange}
-              disabled={loggedIn}
-            />
-          </LoginCardContent>
+            <Typography color={loggedIn ? "success.main" : "error.main"}>
+              {notification}
+            </Typography>
+            <LoginCardContent>
+              <TextField
+                label="username"
+                value={username}
+                onChange={handleUsernameChange}
+                disabled={loggedIn}
+              />
+              <TextField
+                helperText="Do not share your password with anyone"
+                type="password"
+                label="password"
+                value={password}
+                onChange={handlePasswordChange}
+                disabled={loggedIn}
+              />
+            </LoginCardContent>
 
-          <LoginCardActions>
-            <LoadingButton
-              loading={loading}
-              size="large"
-              variant="contained"
-              onClick={handleLogin}
-              disabled={loggedIn}
-            >
-              Login
-            </LoadingButton>
-          </LoginCardActions>
-        </LoginCard>
+            <LoginCardActions>
+              <LoadingButton
+                loading={loading}
+                size="large"
+                variant="contained"
+                onClick={handleLogin}
+                disabled={loggedIn}
+              >
+                Login
+              </LoadingButton>
+            </LoginCardActions>
+          </LoginCard>
+        )}
       </Grid>
     </Grid>
   );
