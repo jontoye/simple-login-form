@@ -5,10 +5,10 @@ import {
   CardActions,
   CardContent,
   Typography,
-  Button,
   CardHeader,
   TextField
 } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
 import { login } from "./utils/login";
 import { useState } from "react";
 
@@ -80,6 +80,7 @@ export default function App() {
               label="username"
               value={username}
               onChange={handleUsernameChange}
+              disabled={loggedIn}
             />
             <TextField
               helperText="Do not share your password with anyone"
@@ -87,13 +88,20 @@ export default function App() {
               label="password"
               value={password}
               onChange={handlePasswordChange}
+              disabled={loggedIn}
             />
           </LoginCardContent>
 
           <LoginCardActions>
-            <Button size="large" variant="contained" onClick={handleLogin}>
-              {loading ? "Loading..." : "Login"}
-            </Button>
+            <LoadingButton
+              loading={loading}
+              size="large"
+              variant="contained"
+              onClick={handleLogin}
+              disabled={loggedIn}
+            >
+              Login
+            </LoadingButton>
           </LoginCardActions>
         </LoginCard>
       </Grid>
